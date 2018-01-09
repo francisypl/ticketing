@@ -32,13 +32,10 @@ class AfterMarket extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sellers: [],
-            address: props.address,
-            afterMarket: props.afterMarketStatus
+            sellers: []
         };
         this.sellTicket = this.sellTicket.bind(this);
         this.buyTicket = this.buyTicket.bind(this);
-        this.afterMarketStatus = this.afterMarketStatus.bind(this);
     }
 
 
@@ -46,7 +43,8 @@ class AfterMarket extends Component {
     // REMOVE FROM ARRAY WHEN SOLD OUT
     sellTicket() {
         let contractInstance;
-        TicketSaleContract.at(this.state.address)
+        const { address } = this.props;
+        TicketSaleContract.at(address)
             .then(instance => {
                 contractInstance = instance;
                 return contractInstance.getName();
@@ -91,7 +89,8 @@ class AfterMarket extends Component {
     // BUY TICKET FROM OTHER PERSON
     buyTicket(address) {
         let contractInstance;
-        TicketSaleContract.at(this.state.address)
+        const { address } = this.props;
+        TicketSaleContract.at(address)
             .then(instance => {
                 contractInstance = instance;
                 return contractInstance.getName();
@@ -110,24 +109,6 @@ class AfterMarket extends Component {
             })
             .catch(error => console.log(error))
     }
-
-    afterMarketStatus() {
-        if (this.state.afterMarketStatus == "false") {
-            return true;
-        } else if (this.state.afterMarketStatus == "true") {
-            return false;
-        } else {
-            console.log(`awdf`);
-        }
-    }
-
-    // ====NOTE TO SELF=====
-    // figure out why this is needed to get props when address wasn't
-    componentWillReceiveProps(nextProps) {
-        console.log(`componentWIllRecieveProps called: ${nextProps.afterMarketStatus}`);
-        this.setState({ afterMarket: nextProps.afterMarketStatus });
-    }
-
 
     componentWillMount() {
         let contractInstance;
@@ -168,10 +149,13 @@ class AfterMarket extends Component {
     }
 
     render() {
+        const { afterMarketStatus, address } = this.props;
+        console.log('afterMarketStatus =>', afterMarketStatus);
+        console.log('address =>', address);
         return (
             <div>
                 <p></p>
-                <RaisedButton label="Sell ticket on aftermarket" onClick={this.sellTicket} disabled={this.state.afterMarket} />
+                <RaisedButton label="Sell ticket on aftermarket" onClick={this.sellTicket} disabled={afterMarketStatus === 'false'} />
                 <br />
                 <MuiThemeProvider>
                     <Tables
